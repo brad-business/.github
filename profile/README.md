@@ -405,4 +405,190 @@ brad-business/
 │
 ├── capabilities/
 │   ├── commerce/
+│   ├── inventory/
+│   ├── finance/
+│   └── services/
+│
+├── ports/
+│   ├── persistence/
+│   ├── identity/
+│   ├── events/
+│   └── payments/
+│
+├── adapters/
+│   ├── memory/
+│   ├── sqlite/
+│   └── postgres/
+│
+├── integrations/
+│   ├── mpesa/
+│   ├── airtel/
+│   ├── sms/
+│   └── email/
+│
+├── transports/
+│   ├── rest/
+│   └── grpc/
+│
+├── applications/
+│   ├── server/
+│   ├── worker/
+│   └── cli/
+│
+└── products/
+    └── brad-business/
 ```
+
+Not every module needs to exist immediately. The workspace will grow as capabilities are implemented.
+
+The architectural dependency rule is:
+
+> **Infrastructure depends on the business model. The business model does not depend on infrastructure.**
+
+---
+
+## Capabilities, Not Product Tiers
+
+The previous BRAD Business architecture divided functionality into Basic, Standard, Enterprise, and Custom editions.
+
+The new architecture replaces this concept with **capabilities**.
+
+A business can compose the capabilities it requires:
+
+```text
+Commerce
+Inventory
+Accounting
+Finance
+Lending
+Services
+Manufacturing
+Procurement
+Payroll
+Membership
+Payments
+Communications
+Reporting
+```
+
+This is more flexible than maintaining separate product branches.
+
+A small retailer might use:
+
+```text
+Commerce
+Inventory
+Accounting
+Payments
+```
+
+A SACCO might use:
+
+```text
+Membership
+Finance
+Lending
+Accounting
+Payments
+Audit
+```
+
+A farm might use:
+
+```text
+Agriculture
+Inventory
+Commerce
+Accounting
+Payments
+```
+
+The underlying BOS remains the same.
+
+---
+
+## API and Integration
+
+The BOS is intended to be API-first.
+
+External applications should be able to issue commands and retrieve business state without needing to understand the internal implementation.
+
+For example:
+
+```http
+POST /commands
+```
+
+could eventually represent:
+
+```text
+CreateSale
+ReceiveInventory
+MakePayment
+ApproveLoan
+DisburseLoan
+TransferStock
+RegisterMember
+```
+
+The command is processed by the BOS and may produce multiple events and downstream consequences.
+
+This makes BRAD Business suitable both as a standalone business application and as a business engine embedded into other applications.
+
+---
+
+## Long-Term Vision
+
+BRAD Business is intended to become a reusable business operating platform rather than a collection of unrelated vertical applications.
+
+The same engine should eventually support products such as:
+
+```text
+BRAD Business
+FarmBiz
+BRAD POS
+BRAD SACCO
+Manufacturing
+Professional Services
+```
+
+where each product is primarily a composition of common economic capabilities and domain-specific workflows.
+
+The long-term goal is:
+
+> **One reliable business engine capable of representing the economic operations of many different kinds of organizations.**
+
+---
+
+## Current Development Principle
+
+The project is being built from the inside out.
+
+The initial priority is the correctness of the business engine:
+
+```text
+Entity
+   ↓
+Command
+   ↓
+Guard
+   ↓
+State Transition
+   ↓
+Event
+   ↓
+Economic Event
+   ↓
+Accounting Event
+   ↓
+Audit Lineage
+```
+
+Only after these foundations are sound should transport, persistence, integrations, and user interfaces be layered on top.
+
+The objective is to build a system where the business model remains understandable and correct regardless of how or where the system is deployed.
+
+---
+
+**BRAD Business**
+*Business operating infrastructure for the real world.*
